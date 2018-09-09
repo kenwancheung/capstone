@@ -91,4 +91,9 @@ from cohorts_merged_diagnosed
 
 where start_date_d >= '2017-06-01'
 
+/**************************************
+-- export commands in psql
+**************************************/
 
+\COPY (SELECT * FROM cohorts_merged_training) to 'Z:\\final_data\\cohorts_merged_training.csv' CSV HEADER;
+\COPY (SELECT * FROM cohorts_merged_test) to 'Z:\\final_data\\cohorts_merged_test.csv' CSV HEADER;
