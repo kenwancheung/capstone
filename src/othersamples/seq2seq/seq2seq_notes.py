@@ -15,7 +15,7 @@ os.getcwd()
 
 # notes = pd.read_csv("Z:/notes v2/cohort1_deid_df.csv")
 # notes = pd.read_csv("Z:/final_data/cohort1_final_data.csv")
-notes = pd.read_csv("gpfs/data/ildproject-share/final_data/cohort1_final_data.csv")
+notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohort1_final_data.csv")
 
 notes = notes[['findings','impressions']]
 notes.head()
@@ -175,7 +175,7 @@ print("Size of Vocabulary:", len(word_counts))
 # (https://github.com/commonsense/conceptnet-numberbatch)
 embeddings_index = {}
 # with open('Z:/helper/numberbatch-en-17.06.txt', encoding='utf-8') as f:
-with open('gpfs/data/ildproject-share/helper/numberbatch-en-17.06.txt', encoding='utf-8') as f:
+with open('/gpfs/data/ildproject-share/helper/numberbatch-en-17.06.txt', encoding='utf-8') as f:
     for line in f:
         values = line.split(' ')
         word = values[0]
@@ -585,7 +585,7 @@ sorted_texts_short = sorted_texts[start:end]
 print("The shortest text length:", len(sorted_texts_short[0]))
 print("The longest text length:",len(sorted_texts_short[-1]))
 
-ckpt_text = "gpfs/data/ildproject-share/modelparams/seq2seq/best_model_%s.ckpt" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
+ckpt_text = "/gpfs/data/ildproject-share/modelparams/seq2seq/best_model_%s.ckpt" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
 print(ckpt_text)
 
 # Train the Model
@@ -601,7 +601,6 @@ update_loss = 0
 batch_loss = 0
 summary_update_loss = [] # Record the update losses for saving improvements in the model
 
-ckpt_text = "gpfs/data/ildproject-share/modelparams/seq2seq/best_model_%s.ckpt" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
 # ckpt_text = "./best_model.ckpt"
 checkpoint = ckpt_text
 with tf.Session(graph=train_graph) as sess:
