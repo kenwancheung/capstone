@@ -15,7 +15,7 @@ os.getcwd()
 
 # notes = pd.read_csv("Z:/notes v2/cohort1_deid_df.csv")
 # notes = pd.read_csv("Z:/final_data/cohort1_final_data.csv")
-notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohort1_final_data.csv")
+notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohorts_merged_training.csv")
 
 notes = notes[['findings','impressions']]
 notes.head()
@@ -520,7 +520,7 @@ print("pad summaries batch samples:\n\r {}".format(pad_summaries_batch_samples))
 
 # Set the Hyperparameters
 epochs = 1
-batch_size = 64
+# batch_size = 64
 # batch_size = 10
 batch_size = 100
 rnn_size = 256
@@ -579,7 +579,7 @@ train_writer.add_graph(train_graph)
 # Subset the data for training
 # start = 200000
 start = 0
-end = start + 5000
+end = start + 500000
 sorted_summaries_short = sorted_summaries[start:end]
 sorted_texts_short = sorted_texts[start:end]
 print("The shortest text length:", len(sorted_texts_short[0]))

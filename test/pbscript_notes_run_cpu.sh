@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#PBS -l nodes=1:ppn=20
-#PBS -l mem=64Gb
+#PBS -l nodes=1:ppn=28
+#PBS -l mem=124
 #PBS -j oe
 
 module load singularity tensorflow/tensorflow:1.10.0-devel-py3
