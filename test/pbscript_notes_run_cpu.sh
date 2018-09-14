@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#PBS -l nodes=1:ppn=28
+#PBS -l nodes=4:ppn=16
 #PBS -l mem=128Gb
 #PBS -j oe
 
