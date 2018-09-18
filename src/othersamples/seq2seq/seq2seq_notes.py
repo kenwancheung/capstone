@@ -670,8 +670,8 @@ with tf.Session(graph=train_graph) as sess:
             break
 
 ## Scoring section ##
-print("[info] scoring section"
-      
+print("[info] scoring section")
+
 # input_sentences=["Increase in diffuse pulmonary opacities which may represent pulmonary edema, pulmonary hemorrhage, pulmonary alveolar proteinosis, and/or atypical infection",
 #                "Diffuse nonspecific interstitial disease of uncertain etiology, without appreciable interval change"]
 # generagte_summary_length =  [3,2]
@@ -687,12 +687,12 @@ list_of_files = glob.glob('/gpfs/data/ildproject-share/modelparams/seq2seq/*.met
 print("[info] list of files from training", list_of_files)
 # ckpt_text = max(list_of_files, key=os.path.getctime)
 # ckpt_text = ckpt_text[:-5]
-      
+
 print("[info] the max file by time is: ",ckpt_text)
 
 def text_to_seq(text):
     '''Prepare the text for the model'''
-    
+
     text = clean_text(text)
     return [vocab_to_int.get(word, vocab_to_int['<UNK>']) for word in text.split()]
 
@@ -725,13 +725,13 @@ print("[info] dimensions of notes",test_notes.shape)
 
 # now to sequence
 test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.impressions]
-input_sentences = test_notes.impressions[0:5]
+input_sentences = test_notes.impressions[0:50]
 print(input_sentences.head())
 generagte_summary_length =  294
-      
+
 scans_output = pd.DataFrame(input_sentences)
 scans_output.head()
-      
+
 checkpoint = ckpt_text
 summaries_list = []
 
@@ -755,8 +755,8 @@ with tf.Session(graph=loaded_graph) as sess:
     #Multiply by batch_size to match the model's input parameters
     for i, text in enumerate(test_texts):
         generagte_summary_length = generagte_summary_length_list[i]
-        answer_logits = sess.run(logits, {input_data: [text]*batch_size, 
-                                          summary_length: [generagte_summary_length], #summary_length: [np.random.randint(5,8)], 
+        answer_logits = sess.run(logits, {input_data: [text]*batch_size,
+                                          summary_length: [generagte_summary_length], #summary_length: [np.random.randint(5,8)],
                                           text_length: [len(text)]*batch_size,
                                           keep_prob: 1.0})[0]
         print(answer_logits)
@@ -765,3 +765,6 @@ with tf.Session(graph=loaded_graph) as sess:
         summaries_list.append([int_to_vocab[i] for i in answer_logits if i != pad])
 #         print('- Review:\n\r {}'.format(input_sentences[i]))
 #         print('- Summary:\n\r {}\n\r\n\r'.format(" ".join([int_to_vocab[i] for i in answer_logits if i != pad])))
+
+print("[info] input sentences",scans_output)
+print("[info] summaries generated",summaries_list)
