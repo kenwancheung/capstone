@@ -6,6 +6,7 @@ from nltk.corpus import stopwords
 import time
 import os
 import datetime
+import glob
 
 from tensorflow.python.layers.core import Dense
 from tensorflow.python.ops.rnn_cell_impl import _zero_state_tensors
