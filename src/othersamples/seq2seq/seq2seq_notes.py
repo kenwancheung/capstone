@@ -580,6 +580,7 @@ train_writer.add_graph(train_graph)
 # start = 200000
 start = 0
 end = start + len(sorted_summaries)
+end = start + 50000
 sorted_summaries_short = sorted_summaries[start:end]
 sorted_texts_short = sorted_texts[start:end]
 print("The shortest text length:", len(sorted_texts_short[0]))
@@ -667,3 +668,100 @@ with tf.Session(graph=train_graph) as sess:
         if stop_early == stop:
             print("Stopping Training.")
             break
+
+## Scoring section ##
+print("[info] scoring section"
+      
+# input_sentences=["Increase in diffuse pulmonary opacities which may represent pulmonary edema, pulmonary hemorrhage, pulmonary alveolar proteinosis, and/or atypical infection",
+#                "Diffuse nonspecific interstitial disease of uncertain etiology, without appreciable interval change"]
+# generagte_summary_length =  [3,2]
+
+# test_texts = [text_to_seq(input_sentence) for input_sentence in input_sentences]
+
+#### Now we move onto the next section
+print("[info] now we will score the test set")
+
+# get max file
+list_of_files = glob.glob('/gpfs/data/ildproject-share/modelparams/seq2seq/*.meta') # * means all if need specific format then *.csv
+# list_of_files = glob.glob('Z:/modelparams/seq2seq/*.meta') # * means all if need specific format then *.csv
+print("[info] list of files from training", list_of_files)
+# ckpt_text = max(list_of_files, key=os.path.getctime)
+# ckpt_text = ckpt_text[:-5]
+      
+print("[info] the max file by time is: ",ckpt_text)
+
+def text_to_seq(text):
+    '''Prepare the text for the model'''
+    
+    text = clean_text(text)
+    return [vocab_to_int.get(word, vocab_to_int['<UNK>']) for word in text.split()]
+
+# load in test data set
+# test_notes = pd.read_csv("Z:/final_data/cohorts_merged_test.csv")
+notes = pd.read_csv("gpfs/data/ildproject-share/final_data/cohorts_merged_test.csv")
+
+test_notes = test_notes[['findings','impressions']]
+test_notes.head(n=50)
+
+# Remove null values and unneeded features
+test_notes = test_notes.dropna()
+# test_notes = test_notes.reset_index(drop=True)
+
+print("[info] dimensions of notes",test_notes.shape)
+
+# cleaned test data set
+
+# test_clean_summaries = []
+# for summary in test_notes.impressions:
+#     test_clean_summaries.append(clean_text(summary, remove_stopwords=False))
+# print("Summaries are complete.")
+
+# test_clean_texts = []
+# for text in test_notes.findings:
+#     test_clean_texts.append(clean_text(text))
+# print("Texts are complete.")
+
+# len(test_clean_summaries)
+
+# now to sequence
+test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.impressions]
+input_sentences = test_notes.impressions[0:5]
+print(input_sentences.head())
+generagte_summary_length =  294
+      
+scans_output = pd.DataFrame(input_sentences)
+scans_output.head()
+      
+checkpoint = ckpt_text
+summaries_list = []
+
+# actual scoring
+if type(generagte_summary_length) is list:
+    if len(input_sentences)!=len(generagte_summary_length):
+        raise Exception("[Error] makeSummaries parameter generagte_summary_length must be same length as input_sentences or an integer")
+    generagte_summary_length_list = generagte_summary_length
+else:
+    generagte_summary_length_list = [generagte_summary_length] * len(test_texts)
+loaded_graph = tf.Graph()
+with tf.Session(graph=loaded_graph) as sess:
+    # Load saved model
+    loader = tf.train.import_meta_graph(checkpoint + '.meta')
+    loader.restore(sess, checkpoint)
+    input_data = loaded_graph.get_tensor_by_name('input:0')
+    logits = loaded_graph.get_tensor_by_name('predictions:0')
+    text_length = loaded_graph.get_tensor_by_name('text_length:0')
+    summary_length = loaded_graph.get_tensor_by_name('summary_length:0')
+    keep_prob = loaded_graph.get_tensor_by_name('keep_prob:0')
+    #Multiply by batch_size to match the model's input parameters
+    for i, text in enumerate(test_texts):
+        generagte_summary_length = generagte_summary_length_list[i]
+        answer_logits = sess.run(logits, {input_data: [text]*batch_size, 
+                                          summary_length: [generagte_summary_length], #summary_length: [np.random.randint(5,8)], 
+                                          text_length: [len(text)]*batch_size,
+                                          keep_prob: 1.0})[0]
+        print(answer_logits)
+        # Remove the padding from the summaries
+        pad = vocab_to_int["<PAD>"]
+        summaries_list.append([int_to_vocab[i] for i in answer_logits if i != pad])
+#         print('- Review:\n\r {}'.format(input_sentences[i]))
+#         print('- Summary:\n\r {}\n\r\n\r'.format(" ".join([int_to_vocab[i] for i in answer_logits if i != pad])))
