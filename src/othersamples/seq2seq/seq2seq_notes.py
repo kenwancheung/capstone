@@ -704,6 +704,7 @@ test_notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohorts_merged_
 test_notes = test_notes[['findings','impressions']]
 test_notes = test_notes.dropna()
 
+# only if we need to test the script do we subset below
 test_notes = test_notes.head(n=50)
 print(test_notes.head())
 
@@ -772,5 +773,12 @@ with tf.Session(graph=loaded_graph) as sess:
 #         print('- Review:\n\r {}'.format(input_sentences[i]))
 #         print('- Summary:\n\r {}\n\r\n\r'.format(" ".join([int_to_vocab[i] for i in answer_logits if i != pad])))
 
-print("[info] input sentences",scans_output)
-print("[info] summaries generated",summaries_list)
+# now we have the scored
+print("[info] input sentences scored and summaries generated")
+
+# print(scans_output)
+# print(summaries_list)
+
+# now let's join the summaries list and the input_sentences
+scans_output.findings = summaries_list
+scans_output.to_csv("/gpfs/data/ildproject-share/final_data/scored_data/notes_scored.csv")
