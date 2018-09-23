@@ -701,12 +701,12 @@ def text_to_seq(text):
 # load in test data set
 # test_notes = pd.read_csv("Z:/final_data/cohorts_merged_test.csv")
 test_notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohorts_merged_test.csv")
-
 test_notes = test_notes[['findings','impressions']]
-test_notes.head(n=50)
-
-# Remove null values and unneeded features
 test_notes = test_notes.dropna()
+
+test_notes = test_notes.head(n=50)
+print(test_notes.head())
+
 # test_notes = test_notes.reset_index(drop=True)
 
 print("[info] dimensions of notes",test_notes.shape)
@@ -727,13 +727,17 @@ print("[info] dimensions of notes",test_notes.shape)
 
 # now to sequence
 test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.impressions]
-input_sentences = test_notes.impressions[0:50]
-print(input_sentences.head())
+
+# original inputs
+input_sentences = test_notes.impressions
+
+# define summary length
 generagte_summary_length =  294
 
-scans_output = pd.DataFrame(input_sentences)
-scans_output.head()
+# define the output dataframe for ultimate join in.
+scans_output = pd.DataFrame(test_notes.impressions)
 
+# load in
 checkpoint = ckpt_text
 summaries_list = []
 
