@@ -700,7 +700,7 @@ def text_to_seq(text):
 
 # load in test data set
 # test_notes = pd.read_csv("Z:/final_data/cohorts_merged_test.csv")
-notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohorts_merged_test.csv")
+test_notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohorts_merged_test.csv")
 
 test_notes = test_notes[['findings','impressions']]
 test_notes.head(n=50)
