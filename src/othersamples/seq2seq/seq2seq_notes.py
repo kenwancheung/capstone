@@ -727,13 +727,12 @@ print("[info] dimensions of notes",test_notes.shape)
 # len(test_clean_summaries)
 
 # now to sequence
+print("[info] now converting raw text to seq")
 test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.impressions]
 
 # original inputs
+print("[info] storing original raw texts")
 input_sentences = test_notes.impressions
-
-# define summary length
-generagte_summary_length =  500
 
 # define the output dataframe for ultimate join in.
 scans_output = pd.DataFrame(test_notes.impressions)
@@ -741,6 +740,8 @@ scans_output = pd.DataFrame(test_notes.impressions)
 # load in
 checkpoint = ckpt_text
 summaries_list = []
+# define summary length
+generagte_summary_length =  500
 
 # actual scoring
 if type(generagte_summary_length) is list:
@@ -766,7 +767,7 @@ with tf.Session(graph=loaded_graph) as sess:
                                           summary_length: [generagte_summary_length], #summary_length: [np.random.randint(5,8)],
                                           text_length: [len(text)]*batch_size,
                                           keep_prob: 1.0})[0]
-        print(answer_logits)
+        # print(answer_logits)
         # Remove the padding from the summaries
         pad = vocab_to_int["<PAD>"]
         summaries_list.append([int_to_vocab[i] for i in answer_logits if i != pad])
