@@ -19,7 +19,7 @@ os.getcwd()
 notes = pd.read_csv("/gpfs/data/ildproject-share/final_data/cohorts_merged_training.csv")
 
 notes = notes[['findings','impressions']]
-notes = notes.head(n=100000)
+# notes = notes.head(n=100000)
 notes.head()
 notes.isnull().sum()
 
@@ -705,7 +705,7 @@ test_notes = test_notes[['findings','impressions']]
 test_notes = test_notes.dropna()
 
 # only if we need to test the script do we subset below
-test_notes = test_notes.head(n=50)
+# test_notes = test_notes.head(n=50)
 print(test_notes.head())
 
 # test_notes = test_notes.reset_index(drop=True)
@@ -733,7 +733,7 @@ test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.impre
 input_sentences = test_notes.impressions
 
 # define summary length
-generagte_summary_length =  294
+generagte_summary_length =  500
 
 # define the output dataframe for ultimate join in.
 scans_output = pd.DataFrame(test_notes.impressions)
