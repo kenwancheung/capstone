@@ -1173,6 +1173,9 @@ create index idx_cohort1_diagnosed_date_1 on cohort1_diagnosed_date (patient_id)
 create index idx_cohort1_diagnosed_date_2 on cohort1_diagnosed_date (encounter_id_diagnosed);
 create index idx_cohort1_diagnosed_date_3 on cohort1_diagnosed_date (date_diagnosed);
 
+drop table if exists cohort1_consolidated_data;
+drop table if exists cohort2_consolidated_data;
+
 /**************************************
 -- export commands in psql
 **************************************/

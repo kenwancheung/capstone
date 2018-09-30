@@ -10,6 +10,8 @@ select
 c.*
 ,a.encounter_id_diagnosed
 ,a.date_diagnosed
+,case when c.adm_date_d > a.date_diagnosed then 1 else 0
+	end as ild_diag_prior_to_visit
 ,case when a.ild_status is null
 	then 0
 	else 1
@@ -24,10 +26,12 @@ left join lateral (
 	from cohort1_diagnosed_date d 
 
 	where c.patient_id = d.patient_id
-		and c.encounter_id >= d.encounter_id_diagnosed
+
 	limit 1
 
 	) a on true
+
+--where c.patient_id = 672
 	
 UNION
 
@@ -36,6 +40,7 @@ select
 c.*
 ,null::bigint as encounter_id_diagnosed
 ,null::date as date_diagnosed
+,0::integer as ild_diag_prior_to_visit
 ,0::integer as ild_status
 
 from cohort2_final_dta c
