@@ -791,7 +791,7 @@ create index idx_cohort2_consol_1 on cohort2_consolidated_data (patient_id);
 **************************************/
 
 drop table if exists cohort2_to_move;
-create table cohort2_to_move as 
+create temp table cohort2_to_move as 
 
 select 
 
