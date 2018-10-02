@@ -790,8 +790,13 @@ create index idx_cohort2_consol_1 on cohort2_consolidated_data (patient_id);
 -- get any patient_ids where matches one of. then move by id.
 **************************************/
 
+<<<<<<< HEAD
+drop table if exists cohort2_to_move;
+create temp table cohort2_to_move as 
+=======
 drop table if exists cohort2_to_move_patients;
 create table cohort2_to_move_patients as
+>>>>>>> 77cf2471033164852f67c32eb9c7a8f0cc6fa654
 
 select 
 
@@ -1118,6 +1123,9 @@ order by 1, 2 asc
 create index idx_cohort1_diagnosed_date_1 on cohort1_diagnosed_date (patient_id);
 create index idx_cohort1_diagnosed_date_2 on cohort1_diagnosed_date (encounter_id_diagnosed);
 create index idx_cohort1_diagnosed_date_3 on cohort1_diagnosed_date (date_diagnosed);
+
+drop table if exists cohort1_consolidated_data;
+drop table if exists cohort2_consolidated_data;
 
 /**************************************
 -- check for uniques
