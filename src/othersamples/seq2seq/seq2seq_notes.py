@@ -526,9 +526,9 @@ epochs = 1
 # batch_size = 10
 batch_size = 100
 rnn_size = 256
-num_layers = 2
+num_layers = 4
 learning_rate = 0.005
-keep_probability = 0.95
+keep_probability = 0.75
 
 # Build the graph
 train_graph = tf.Graph()
@@ -782,4 +782,6 @@ print("[info] input sentences scored and summaries generated")
 
 # now let's join the summaries list and the input_sentences
 scans_output.findings = summaries_list
-scans_output.to_csv("/gpfs/data/ildproject-share/final_data/scored_data/notes_scored.csv")
+filename = "/gpfs/data/ildproject-share/final_data/scored_data/notes_scored_%s.csv" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
+
+scans_output.to_csv(filename)
