@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#PBS -l nodes=1:ppn=4:gpus=1 -q gpu
-#PBS -l mem=16Gb
+#PBS -l nodes=1:ppn=4:gpus=2 -q gpu
+#PBS -l mem=128Gb
+#PBS -l walltime=24:00:00
 #PBS -j oe
 
 module load singularity tensorflow/tensorflow:1.4.0-rc0-gpu-py3
