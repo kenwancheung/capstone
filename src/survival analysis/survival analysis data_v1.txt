@@ -1,0 +1,206 @@
+-- select * from cohort1_final_dta;
+-- select * from cohorts_merged_diagnosed limit 10;
+-- select * from cohort1_diagnosed_date;
+-- select * from cohorts_merged_training limit 10;
+
+/* Basic stats on the training and test data sets */
+
+select count(distinct patient_id) from cohorts_merged_training; --100,405
+select count(distinct patient_id) from cohorts_merged_test;-- 36,897
+
+/* PATIENT AGE EDA: 
+checking to see how many different ages are recorded per patient
+we weren't given a birthdate field so we have to keep track of recorded age per encounter*/
+select patient_id, count (patient_id) as freq from 
+(
+select distinct patient_id, age_at_last_encounter from cohorts_merged_training) as a
+group by a.patient_id
+order by count(a.patient_id) desc; --100,478
+-- there are up to two different ages recorded per patient, depending upon when the encounter occurred
+-- Remedy this by including a column for age at first encounter, age at last encounter
+
+--PATIENT AGE AT FIRST VISIT
+--just checking counts
+--select count(patient_id) from --100405 rows
+--(
+create table first_visit_tab as select patient_id
+,encounter_id as first_encounter_id
+,adm_date_d as first_encounter_date
+,age_at_last_encounter as age_at_first_visit
+,rownumber
+from(
+select patient_id
+,encounter_id
+,age_at_last_encounter
+,adm_date_d
+,ROW_NUMBER() 
+over (partition by patient_id order by patient_id, adm_date_d asc) as rownumber 
+from 
+(
+select distinct on (patient_id, encounter_id) patient_id, encounter_id, age_at_last_encounter, adm_date_d
+from cohorts_merged_training
+) as a
+) as b where rownumber=1
+--) as c;
+
+select * from first_visit_tab;
+
+--PATIENT AGE AT LAST ENCOUNTER
+--drop table last_visit_tab;
+create table last_visit_tab as 
+select 
+distinct c.patient_id
+,c.last_encounter_id
+,c.last_encounter_date
+,c.age_at_last_visit
+,c.rownumber 
+,c.max_rownumber
+from(
+select patient_id
+,encounter_id as last_encounter_id
+,adm_date_d as last_encounter_date
+,age_at_last_encounter as age_at_last_visit
+,rownumber
+,max(rownumber) over (partition by patient_id ) as max_rownumber
+from(
+select patient_id
+,encounter_id
+,age_at_last_encounter
+,adm_date_d
+,ROW_NUMBER() 
+over (partition by patient_id order by patient_id, adm_date_d asc) as rownumber
+from
+(
+select distinct on (patient_id, encounter_id) patient_id, encounter_id, age_at_last_encounter, adm_date_d
+from cohorts_merged_training
+) as a
+) as b group by 1,2,3,4,5
+) as c where rownumber=max_rownumber;
+
+select * from last_visit_tab;
+--select * from last_visit_tab where patient_id=49;
+
+drop table visits_tab;
+create table visits_tab as select
+*
+,(date_diagnosed-first_encounter_date) as first_to_diagnosed_days
+from 
+(SELECT
+a.patient_id
+,a.first_encounter_id
+,a.first_encounter_date
+,b.last_encounter_id
+,b.last_encounter_date
+,b.age_at_last_visit
+,c.encounter_id_diagnosed
+,c.date_diagnosed
+,c.date_of_death
+from first_visit_tab a
+left join last_visit_tab b
+on a.patient_id=b.patient_id
+left outer join (select distinct patient_id, encounter_id_diagnosed, date_diagnosed, date_of_death from cohorts_merged_training) c
+on a.patient_id=c.patient_id
+) as d;
+
+select * from visits_tab;
+select * from visits_tab where patient_id=49;
+select count(patient_id) from visits_tab;
+
+/*DIAGNOSIS table*/
+drop table diags;
+create table diags
+as select distinct patient_id, dx_1,count(dx_1),row_number() over (partition by patient_id order by patient_id, count(dx_1) ) as freq
+from(
+select
+distinct encounter_id,patient_id, dx_1 from cohorts_merged_training where dx_1 is not null
+union select distinct encounter_id,patient_id, dx_2 from cohorts_merged_training where dx_2 is not null
+union select distinct encounter_id,patient_id, dx_3 from cohorts_merged_training where dx_3 is not null
+union select distinct encounter_id,patient_id, dx_4 from cohorts_merged_training where dx_4 is not null
+union select distinct encounter_id,patient_id, dx_5 from cohorts_merged_training where dx_5 is not null
+union select distinct encounter_id,patient_id, dx_6 from cohorts_merged_training where dx_6 is not null
+union select distinct encounter_id,patient_id, dx_7 from cohorts_merged_training where dx_7 is not null
+union select distinct encounter_id,patient_id, dx_8 from cohorts_merged_training where dx_8 is not null
+union select distinct encounter_id,patient_id, dx_9 from cohorts_merged_training where dx_9 is not null
+union select distinct encounter_id,patient_id, dx_10 from cohorts_merged_training where dx_10 is not null
+union select distinct encounter_id,patient_id, dx_11 from cohorts_merged_training where dx_11 is not null
+union select distinct encounter_id,patient_id, dx_12 from cohorts_merged_training where dx_12 is not null
+union select distinct encounter_id,patient_id, dx_13 from cohorts_merged_training where dx_13 is not null
+union select distinct encounter_id,patient_id, dx_14 from cohorts_merged_training where dx_14 is not null
+union select distinct encounter_id,patient_id, dx_15 from cohorts_merged_training where dx_14 is not null
+union select distinct encounter_id,patient_id, dx_16 from cohorts_merged_training where dx_16 is not null
+union select distinct encounter_id,patient_id, dx_17 from cohorts_merged_training where dx_17 is not null
+union select distinct encounter_id,patient_id, dx_18 from cohorts_merged_training where dx_18 is not null
+union select distinct encounter_id,patient_id, dx_19 from cohorts_merged_training where dx_19 is not null
+union select distinct encounter_id,patient_id, dx_20 from cohorts_merged_training where dx_20 is not null
+union select distinct encounter_id,patient_id, dx_21 from cohorts_merged_training where dx_21 is not null
+union select distinct encounter_id,patient_id, dx_22 from cohorts_merged_training where dx_22 is not null
+union select distinct encounter_id,patient_id, dx_23 from cohorts_merged_training where dx_23 is not null
+union select distinct encounter_id,patient_id, dx_24 from cohorts_merged_training where dx_24 is not null
+union select distinct encounter_id,patient_id, dx_25 from cohorts_merged_training where dx_25 is not null
+union select distinct encounter_id,patient_id, dx_26 from cohorts_merged_training where dx_26 is not null
+union select distinct encounter_id,patient_id, dx_27 from cohorts_merged_training where dx_27 is not null
+union select distinct encounter_id, patient_id, dx_28 from cohorts_merged_training where dx_28 is not null
+union select distinct encounter_id,patient_id, dx_29 from cohorts_merged_training where dx_29 is not null
+union select distinct encounter_id,patient_id, dx_30 from cohorts_merged_training where dx_30 is not null
+union select distinct encounter_id,patient_id, dx_31 from cohorts_merged_training where dx_31 is not null
+union select distinct encounter_id,patient_id, dx_32 from cohorts_merged_training where dx_32 is not null
+union select distinct encounter_id,patient_id, dx_33 from cohorts_merged_training where dx_33 is not null
+union select distinct encounter_id,patient_id, dx_34 from cohorts_merged_training where dx_34 is not null
+union select distinct encounter_id,patient_id, dx_35 from cohorts_merged_training where dx_35 is not null
+union select distinct encounter_id,patient_id, dx_36 from cohorts_merged_training where dx_36 is not null
+union select distinct encounter_id,patient_id, dx_37 from cohorts_merged_training where dx_37 is not null
+union select distinct encounter_id,patient_id, dx_38 from cohorts_merged_training where dx_38 is not null
+union select distinct encounter_id,patient_id, dx_39 from cohorts_merged_training where dx_39 is not null
+union select distinct encounter_id,patient_id, dx_40 from cohorts_merged_training where dx_40 is not null
+union select distinct encounter_id,patient_id, dx_41 from cohorts_merged_training where dx_41 is not null
+union select distinct encounter_id,patient_id, dx_42 from cohorts_merged_training where dx_42 is not null
+union select distinct encounter_id,patient_id, dx_43 from cohorts_merged_training where dx_43 is not null
+union select distinct encounter_id,patient_id, dx_44 from cohorts_merged_training where dx_44 is not null
+union select distinct encounter_id,patient_id, dx_45 from cohorts_merged_training where dx_45 is not null
+union select distinct encounter_id,patient_id, dx_46 from cohorts_merged_training where dx_46 is not null
+union select distinct encounter_id,patient_id, dx_47 from cohorts_merged_training where dx_47 is not null
+union select distinct encounter_id,patient_id, dx_48 from cohorts_merged_training where dx_48 is not null
+union select distinct encounter_id,patient_id, dx_49 from cohorts_merged_training where dx_49 is not null
+union select distinct encounter_id,patient_id, dx_50 from cohorts_merged_training where dx_50 is not null
+union select distinct encounter_id,patient_id, dx_51 from cohorts_merged_training where dx_51 is not null
+union select distinct encounter_id,patient_id, dx_52 from cohorts_merged_training where dx_52 is not null
+union select distinct encounter_id,patient_id, dx_53 from cohorts_merged_training where dx_53 is not null
+union select distinct encounter_id,patient_id, dx_54 from cohorts_merged_training where dx_54 is not null
+union select distinct encounter_id,patient_id, dx_55 from cohorts_merged_training where dx_55 is not null
+union select distinct encounter_id,patient_id, dx_56 from cohorts_merged_training where dx_56 is not null
+union select distinct encounter_id,patient_id, dx_57 from cohorts_merged_training where dx_57 is not null
+union select distinct encounter_id,patient_id, dx_58 from cohorts_merged_training where dx_58 is not null
+union select distinct encounter_id,patient_id, dx_59 from cohorts_merged_training where dx_59 is not null
+union select distinct encounter_id,patient_id, dx_60 from cohorts_merged_training where dx_60 is not null
+union select distinct encounter_id,patient_id, dx_61 from cohorts_merged_training where dx_61 is not null
+union select distinct encounter_id,patient_id, dx_62 from cohorts_merged_training where dx_62 is not null
+union select distinct encounter_id,patient_id, dx_63 from cohorts_merged_training where dx_63 is not null
+union select distinct encounter_id,patient_id, dx_64 from cohorts_merged_training where dx_64 is not null
+union select distinct encounter_id,patient_id, dx_65 from cohorts_merged_training where dx_65 is not null
+union select distinct encounter_id,patient_id, dx_66 from cohorts_merged_training where dx_66 is not null
+union select distinct encounter_id,patient_id, dx_67 from cohorts_merged_training where dx_67 is not null
+union select distinct encounter_id,patient_id, dx_68 from cohorts_merged_training where dx_68 is not null
+union select distinct encounter_id,patient_id, dx_69 from cohorts_merged_training where dx_69 is not null
+union select distinct encounter_id,patient_id, dx_70 from cohorts_merged_training where dx_70 is not null
+union select distinct encounter_id,patient_id, dx_71 from cohorts_merged_training where dx_71 is not null
+union select distinct encounter_id,patient_id, dx_72 from cohorts_merged_training where dx_72 is not null
+union select distinct encounter_id,patient_id, dx_73 from cohorts_merged_training where dx_73 is not null
+union select distinct encounter_id,patient_id, dx_74 from cohorts_merged_training where dx_74 is not null
+union select distinct encounter_id,patient_id, dx_75 from cohorts_merged_training where dx_75 is not null
+union select distinct encounter_id,patient_id, dx_76 from cohorts_merged_training where dx_76 is not null
+union select distinct encounter_id,patient_id, dx_77 from cohorts_merged_training where dx_77 is not null
+union select distinct encounter_id,patient_id, dx_78 from cohorts_merged_training where dx_78 is not null
+union select distinct encounter_id,patient_id, dx_79 from cohorts_merged_training where dx_79 is not null
+union select distinct encounter_id,patient_id, dx_80 from cohorts_merged_training where dx_80 is not null
+union select distinct encounter_id,patient_id, dx_81 from cohorts_merged_training where dx_81 is not null
+union select distinct encounter_id,patient_id, dx_82 from cohorts_merged_training where dx_82 is not null
+union select distinct encounter_id,patient_id, dx_83 from cohorts_merged_training where dx_83 is not null
+union select distinct encounter_id,patient_id, dx_84 from cohorts_merged_training where dx_84 is not null
+union select distinct encounter_id,patient_id, dx_85 from cohorts_merged_training where dx_85 is not null
+union select distinct encounter_id,patient_id, dx_86 from cohorts_merged_training where dx_86 is not null
+)as foo 
+group by patient_id, dx_1
+order by patient_id, freq
+;
+
+select * from diags order by patient_id, freq desc limit 100;
