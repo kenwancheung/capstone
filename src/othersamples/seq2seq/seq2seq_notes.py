@@ -726,16 +726,16 @@ print("[info] dimensions of notes",test_notes.shape)
 
 # len(test_clean_summaries)
 
-# now to sequence
+# original raw text to sequence for predictions
 print("[info] now converting raw text to seq")
-test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.impressions]
+test_texts = [text_to_seq(input_sentence) for input_sentence in test_notes.findings]
 
-# original inputs
+# original raw text input
 print("[info] storing original raw texts")
-input_sentences = test_notes.impressions
+input_sentences = test_notes.findings
 
-# define the output dataframe for ultimate join in.
-scans_output = pd.DataFrame(test_notes.impressions)
+# define the original raw text inputs to join in later our scored summaries.
+scans_output = pd.DataFrame(test_notes.findings)
 
 # load in
 checkpoint = ckpt_text
@@ -781,7 +781,9 @@ print("[info] input sentences scored and summaries generated")
 # print(summaries_list)
 
 # now let's join the summaries list and the input_sentences
-scans_output.findings = summaries_list
+scans_output.impressions = summaries_list
+scans_output.ref_impressions = test_notes.impressions
+
 filename = "/gpfs/data/ildproject-share/final_data/scored_data/notes_scored_%s.csv" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
 
 scans_output.to_csv(filename)
