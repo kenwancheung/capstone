@@ -357,9 +357,9 @@ left join lateral (
 	from encounter_social_cohort1 
 
 	where patient_id = p.patient_id
-		and contact_date_off <= e.adm_date_d
+		and contact_date_off <= e.start_date_d
 
-	order by adm_date_d desc
+	order by start_date_d desc
 	limit 1
 
 ) a on true
@@ -749,9 +749,9 @@ left join lateral (
 	from encounter_social_cohort2 
 
 	where patient_id = p.patient_id
-		and contact_date_off <= e.adm_date_d
+		and contact_date_off <= e.start_date_d
 
-	order by adm_date_d desc
+	order by start_date_d desc
 	limit 1
 
 ) a on true
@@ -791,7 +791,7 @@ create index idx_cohort2_consol_1 on cohort2_consolidated_data (patient_id);
 **************************************/
 
 drop table if exists cohort2_to_move_patients;
-create table cohort2_to_move_patients as
+create temp table cohort2_to_move_patients as
 
 select 
 
@@ -910,7 +910,7 @@ create index idx_cohort2_to_move_patients_1 on cohort2_to_move_patients (patient
 **************************************/
 
 drop table if exists cohort2_to_move;
-create table cohort2_to_move as 
+create temp table cohort2_to_move as 
 
 select 
 
