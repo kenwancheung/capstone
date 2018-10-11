@@ -91,6 +91,12 @@ from cohorts_merged_diagnosed
 
 where start_date_d >= '2017-06-01'
 
+;
+
+grant all on cohorts_merged_test to public;
+grant all on cohorts_merged_diagnosed to public;
+grant all on cohorts_merged_training to public;
+
 /**************************************
 -- export commands in psql
 **************************************/
