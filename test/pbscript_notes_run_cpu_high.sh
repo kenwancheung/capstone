@@ -2,7 +2,7 @@
 
 #PBS -l nodes=1:ppn=16
 #PBS -l mem=128Gb
-#PBS -l walltime=24:00:00
+#PBS -l walltime=72:00:00
 #PBS -j oe
 
 module load singularity tensorflow/tensorflow:1.10.0-devel-py3
