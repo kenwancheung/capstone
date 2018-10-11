@@ -357,9 +357,9 @@ left join lateral (
 	from encounter_social_cohort1 
 
 	where patient_id = p.patient_id
-		and contact_date_off <= e.start_date_d
+		and contact_date_off <= e.adm_date_d
 
-	order by start_date_d desc
+	order by adm_date_d desc
 	limit 1
 
 ) a on true
@@ -749,9 +749,9 @@ left join lateral (
 	from encounter_social_cohort2 
 
 	where patient_id = p.patient_id
-		and contact_date_off <= e.start_date_d
+		and contact_date_off <= e.adm_date_d
 
-	order by start_date_d desc
+	order by adm_date_d desc
 	limit 1
 
 ) a on true
@@ -998,7 +998,7 @@ with ild_dummy as (
 
 	patient_id,
 	encounter_id as encounter_id_diagnosed,
-	start_date_d as date_diagnosed,
+	coalesce(adm_date_d,start_date_d) as date_diagnosed,
 	case when (
 
 		dx_1 in ('495','4951','4952','4953','4954','4955','4956','4957','4958','4959','496','515','517','5171','5172','5173','5178','516','5160','5161','5162','5163','51630','51631','51632','51633','51634','51635','51636','51637','5164','5165','5166','51661','51662','51663','51664','51669','5168','5169','J670','J671','J672','J673','J674','J675','J676','J677','J678','J679','J6710','J8410','J8489','J17','M3481','J99','J8401','J8402','J8403','J84111','J84112','J84113','J84114','J84115','J84116','J84117','J8481','J8482','J8483','J84841','J84842','J84843','J84844','J84845','J84848','J8409','J849') or
