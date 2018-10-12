@@ -2,6 +2,21 @@
 -- cohort1 consol
 **************************************/
 
+drop table if exists cohort2_notes_split;
+create temp table cohort2_notes_split as
+
+select 
+
+*
+,split_part(patient_raw,'_',1)::bigint as encounter_id
+,split_part(patient_raw,'_',2)::bigint as order_proc_id_deid
+
+from cohort2_notes
+
+;
+
+create index idx_tmp_cohort2_notes_1 on cohort2_notes_split (encounter_id);
+create index idx_tmp_cohort2_notes_2 on cohort2_notes_split (order_proc_id_deid);
 
 drop table if exists cohort1_consolidated_data;
 create temp table cohort1_consolidated_data as 
@@ -942,7 +957,7 @@ from cohort2_to_move
 **************************************/
 
 drop table if exists cohort1_final_dta;
-create table cohort1_final_dta as 
+create temp table cohort1_final_dta as 
 
 select
 
@@ -966,7 +981,7 @@ from cohort2_to_move
 **************************************/
 
 drop table if exists cohort2_final_dta;
-create table cohort2_final_dta as 
+create temp table cohort2_final_dta as 
 
 select
 
@@ -1250,8 +1265,11 @@ grant all on cohorts_merged_training to public;
 /**************************************
 -- export commands in psql
 **************************************/
-
+-- don't need below
 \COPY (SELECT * FROM cohort1_final_dta) to 'Z:\\final_data\\cohort1_final_data.csv' CSV HEADER;
 \COPY (SELECT * FROM cohort2_final_dta) to 'Z:\\final_data\\cohort2_final_data.csv' CSV HEADER;
+
+-- below
+\COPY (SELECT * FROM cohorts_merged_diagnosed) to 'Z:\\final_data\\cohorts_merged.csv' CSV HEADER;
 \COPY (SELECT * FROM cohorts_merged_training) to 'Z:\\final_data\\cohorts_merged_training.csv' CSV HEADER;
 \COPY (SELECT * FROM cohorts_merged_test) to 'Z:\\final_data\\cohorts_merged_test.csv' CSV HEADER;
