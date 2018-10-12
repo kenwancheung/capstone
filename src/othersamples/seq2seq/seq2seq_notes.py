@@ -582,7 +582,7 @@ train_writer.add_graph(train_graph)
 # start = 200000
 start = 0
 end = start + len(sorted_summaries)
-end = start + 50000
+# end = start + 50000
 sorted_summaries_short = sorted_summaries[start:end]
 sorted_texts_short = sorted_texts[start:end]
 print("The shortest text length:", len(sorted_texts_short[0]))
