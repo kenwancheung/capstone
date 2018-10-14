@@ -786,6 +786,6 @@ print("[info] input sentences scored and summaries generated")
 scans_output['impressions'] = summaries_list
 scans_output['ref_impressions'] = test_notes.impressions
 
-filename = "/gpfs/data/ildproject-share/final_data/scored_data/notes_scored_%s.csv" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
+filename = "/gpfs/data/ildproject-share/final_data/scored_data/notes_scored_gpu_%s.csv" % (str(datetime.datetime.now()).split('.')[0].replace(' ','_').replace(':','_'))
 
 scans_output.to_csv(filename)
